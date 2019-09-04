@@ -1,5 +1,6 @@
 import sqlite3
 
+import pendulum
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from selenium import webdriver
@@ -63,6 +64,8 @@ def get_loot(fg: FeedGenerator, loot, category: str):
         None
 
     """
+    today = pendulum.today(tz = 'UTC')
+
     for offer in loot.find_all('div', 'offer'):
         entry = fg.add_entry()
         entry.title(offer.find('span').text.strip())
@@ -78,6 +81,15 @@ def get_loot(fg: FeedGenerator, loot, category: str):
         except TypeError:
             entry.link(href = URL)
             entry.guid(URL)
+
+        if db.check_if_entry_exists(entry.guid()['guid']):
+            entry.pubDate(db.get_entry_time(entry.title()))
+        else:
+            entry.pubDate(today)
+            db.add_entry(
+                entry.title(),
+                today
+                )
 
     return
 
