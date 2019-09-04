@@ -14,18 +14,18 @@ def create():
     c = conn.cursor()
     c.execute(
         """create table entries
-        (url text, year integer, month integer, day integer, hour integer)"""
+        (title text, year integer, month integer, day integer)"""
         )
     conn.commit()
     conn.close()
     return
 
 
-def check_if_entry_exists(url: str):
+def check_if_entry_exists(title: str):
     """Checks if an entry is already in the database.
 
     Args:
-        url (str): the entry's URL
+        title (str): the entry's URL
 
     Returns:
         bool: True if the entry exists; False if it doesn't
@@ -35,8 +35,8 @@ def check_if_entry_exists(url: str):
     c = conn.cursor()
     try:
         c.execute(
-            """select * from entries where url = ?""",
-            (url,)
+            """select * from entries where title = ?""",
+            (title,)
             )
         records = c.fetchall()
         return len(records) > 0
@@ -49,11 +49,11 @@ def check_if_entry_exists(url: str):
         return False
 
 
-def add_entry(url: str, datetime: pendulum.datetime):
+def add_entry(title: str, datetime: pendulum.datetime):
     """Adds an entry to the database.
 
     Args:
-        url (str): the entry's URL
+        title (str): the entry's URL
         datetime (pendulum.datetime): the date of the entry
 
     Returns:
@@ -65,19 +65,19 @@ def add_entry(url: str, datetime: pendulum.datetime):
     c = conn.cursor()
     c.execute(
         """insert into entries values
-        (?, ?, ?, ?, ?)""",
-        (url, datetime.year, datetime.month, datetime.day, datetime.hour)
+        (?, ?, ?, ?)""",
+        (title, datetime.year, datetime.month, datetime.day)
         )
     conn.commit()
     conn.close()
     return
 
 
-def get_entry_time(url: str):
+def get_entry_time(title: str):
     """Gets the time for an entry.
 
     Args:
-        url (str): the entry's URL
+        title (str): the entry's URL
 
     Returns:
         pendulum.datetime.Datetime: an appropriate datetime
@@ -90,8 +90,8 @@ def get_entry_time(url: str):
     c = conn.cursor()
     try:
         c.execute(
-            """select * from entries where url = ?""",
-            (url,)
+            """select * from entries where title = ?""",
+            (title,)
             )
         record = c.fetchone()
         return pendulum.datetime(*record[1:], tz = 'UTC')
@@ -108,8 +108,8 @@ def purge_old():
     conn = sqlite3.connect('rss.db')
     c = conn.cursor()
     c.execute(
-        """delete from entries where url not in
-        (select url from entries order by year desc, month desc, day desc
+        """delete from entries where title not in
+        (select title from entries order by year desc, month desc, day desc
         limit 20)
         """
         )
