@@ -12,7 +12,12 @@ URL = 'https://twitch.amazon.com/tp/loot'
 
 
 def get_as_html():
-    """Gets the true source of the URL."""
+    """Gets the true source of the URL.
+
+    Returns:
+        BeautifulSoup of page
+
+    """
     # Choose your own webdriver if desired
     options = webdriver.firefox.options.Options()
     options.headless = True
@@ -68,9 +73,22 @@ def get_loot(fg: FeedGenerator, loot, category: str):
 
     for offer in loot.find_all('div', 'offer'):
         entry = fg.add_entry()
-        entry.title(offer.find('span').text.strip())
+        description = []
+
+        info = offer.find('div', 'offer__body__titles')
+        entry.title(info.find('span').text.strip())
+        offered_by = info.find('p', 'tw-c-text-alt-2').text.strip()
+        description.append(f'Offered by: {offered_by}')
+
+        claim_info = offer.find('div', 'claim-info')
+        expires_by = claim_info.find('span', '').text.strip()
+        if expires_by == 'Offer ends soon':
+            expires_by = 'soon'
+        description.append(f'Expires: {expires_by}')
+
         entry.category(
             category = {
+                'term': category,
                 'label': category
                 }
             )
@@ -81,6 +99,7 @@ def get_loot(fg: FeedGenerator, loot, category: str):
         except TypeError:
             entry.link(href = URL)
             entry.guid(URL)
+            description.append('Visit main page to claim offer.')
 
         if db.check_if_entry_exists(entry.guid()['guid']):
             entry.pubDate(db.get_entry_time(entry.title()))
@@ -90,6 +109,8 @@ def get_loot(fg: FeedGenerator, loot, category: str):
                 entry.title(),
                 today
                 )
+
+        entry.description(description = '\n'.join(description))
 
     return
 
@@ -113,5 +134,4 @@ if __name__ == '__main__':
     fg.language('en-US')
     get_all_loot(fg, get_as_html())
 
-
-    #get_as_html()
+    fg.rss_file('twitchprime.xml')
