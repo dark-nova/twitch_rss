@@ -15,8 +15,11 @@ def get_as_html():
     with open('example.html', 'w') as f:
         f.write(soup.prettify())
 
-def get_loot(soup = None):
-    """Gets loot from page.
+
+def get_all_loot(soup = None):
+    """Gets all loot from page.
+
+    Loot can be categorized as either 'in-game' or 'games'.
 
     Args:
         soup (optional): the soup to use; defaults to None
@@ -27,14 +30,29 @@ def get_loot(soup = None):
         with open('example.html', 'r') as example:
             soup = BeautifulSoup(example, 'html.parser')
 
-    for offer in soup.find_all('div', 'offer'):
+    for loot in soup.find_all('div', 'offer-list__content'):
+        category = loot.find('h3').text.strip()
+        get_loot(loot)
+
+    return
+
+
+def get_loot(loot):
+    """Gets loot for a given `loot` type.
+
+    Called by `get_all_loot`.
+
+    Args:
+        loot: the loot to parse
+
+    """
+    for offer in loot.find_all('div', 'offer'):
         offer_name = offer.find('span').text.strip()
         try:
             offer_link = offer.find('a')['href']
         except TypeError:
             offer_link = URL
 
-    return soup
 
 if __name__ == '__main__':
     #get_as_html()
