@@ -1,9 +1,10 @@
-import sqlite3
-
 import pendulum
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import db
 
@@ -23,10 +24,18 @@ def get_as_html():
     options.headless = True
     browser = webdriver.Firefox(options = options)
     browser.get(URL)
-    soup = BeautifulSoup(browser.page_source, 'html.parser')
-    # with open('example.html', 'w') as f:
-    #     f.write(soup.prettify())
-    return soup
+    try:
+        element = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(
+                (By.ID, 'offer-list__content')
+                )
+            )
+        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        # with open('example.html', 'w') as f:
+        #     f.write(soup.prettify())
+        return soup
+    finally:
+        browser.quit()
 
 
 def get_all_loot(fg: FeedGenerator, soup = None):
