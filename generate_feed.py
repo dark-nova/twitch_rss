@@ -25,9 +25,9 @@ def get_as_html():
     browser = webdriver.Firefox(options = options)
     browser.get(URL)
     try:
-        element = WebDriverWait(browser, 20).until(
+        element = WebDriverWait(browser, 20).until_not(
             EC.presence_of_element_located(
-                (By.CLASS_NAME, 'tw-pd-y-2')
+                (By.CLASS_NAME, 'tw-loading-spinner')
                 )
             )
         soup = BeautifulSoup(browser.page_source, 'html.parser')
