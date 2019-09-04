@@ -27,7 +27,7 @@ def get_as_html():
     try:
         element = WebDriverWait(browser, 20).until(
             EC.presence_of_element_located(
-                (By.CLASS_NAME, 'footer__amazon-logo-section')
+                (By.CLASS_NAME, 'tw-pd-y-2')
                 )
             )
         soup = BeautifulSoup(browser.page_source, 'html.parser')
