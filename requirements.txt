@@ -1,5 +1,11 @@
 beautifulsoup4==4.8.0
 bs4==0.0.1
+feedgen==0.7.0
+lxml==4.4.1
+pendulum==2.0.5
+python-dateutil==2.8.0
+pytzdata==2019.2
 selenium==3.141.0
+six==1.12.0
 soupsieve==1.9.3
 urllib3==1.25.3
