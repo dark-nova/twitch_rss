@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
+from feedgen.feed import FeedGenerator
 from selenium import webdriver
+
 
 URL = 'https://twitch.amazon.com/tp/loot'
 
@@ -32,12 +34,12 @@ def get_all_loot(soup = None):
 
     for loot in soup.find_all('div', 'offer-list__content'):
         category = loot.find('h3').text.strip()
-        get_loot(loot)
+        get_loot(loot, category)
 
     return
 
 
-def get_loot(loot):
+def get_loot(loot, category):
     """Gets loot for a given `loot` type.
 
     Called by `get_all_loot`.
