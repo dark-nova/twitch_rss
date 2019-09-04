@@ -27,7 +27,7 @@ def get_as_html():
     try:
         element = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located(
-                (By.ID, 'offer-list__content')
+                (By.CLASS_NAME, 'offer-list__content')
                 )
             )
         soup = BeautifulSoup(browser.page_source, 'html.parser')
