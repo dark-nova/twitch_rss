@@ -25,9 +25,9 @@ def get_as_html():
     browser = webdriver.Firefox(options = options)
     browser.get(URL)
     try:
-        element = WebDriverWait(browser, 10).until(
+        element = WebDriverWait(browser, 20).until(
             EC.presence_of_element_located(
-                (By.CLASS_NAME, 'offer-list__content')
+                (By.CLASS_NAME, 'footer__amazon-logo-section')
                 )
             )
         soup = BeautifulSoup(browser.page_source, 'html.parser')
