@@ -119,7 +119,7 @@ def get_loot(fg: FeedGenerator, loot, category: str):
                 today
                 )
 
-        entry.description(description = '\n'.join(description))
+        entry.description(description = '&lt;br/&gt;'.join(description))
 
     return
 
