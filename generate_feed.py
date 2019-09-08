@@ -110,7 +110,7 @@ def get_loot(fg: FeedGenerator, loot, category: str):
             entry.guid(URL)
             description.append('Visit main page to claim offer.')
 
-        if db.check_if_entry_exists(entry.guid()['guid']):
+        if db.check_if_entry_exists(entry.title()):
             entry.pubDate(db.get_entry_time(entry.title()))
         else:
             entry.pubDate(today)
