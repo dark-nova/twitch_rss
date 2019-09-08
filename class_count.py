@@ -1,16 +1,18 @@
 import json
 import sys
-
 from collections import defaultdict
 from html.parser import HTMLParser
 
+
 classes = defaultdict(int)
+
 
 class ClassCounter(HTMLParser):
     def handle_starttag(self, tag, attrs):
         for (attr, val) in attrs:
             if attr == 'class':
                 classes[val] += 1
+
 
 parser = ClassCounter()
 
