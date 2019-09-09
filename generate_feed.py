@@ -142,5 +142,5 @@ if __name__ == '__main__':
     fg.logo('https://dark-nova.me/twitchprime.png')
     fg.language('en-US')
     get_all_loot(fg, get_as_html())
-
-    fg.rss_file('twitchprime.xml')
+    if len(fg.entry()) > 0:
+        fg.rss_file('twitchprime.xml')
