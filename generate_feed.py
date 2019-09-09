@@ -1,3 +1,5 @@
+import logging
+
 import pendulum
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
@@ -10,6 +12,22 @@ import db
 
 
 URL = 'https://twitch.amazon.com/tp/loot'
+
+logger = logging.getLogger('twitch_prime_feed')
+logger.setLevel(logging.DEBUG)
+
+fh = logging.FileHandler('feed.log')
+fh.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.WARNING)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 
 def get_as_html():
@@ -144,3 +162,7 @@ if __name__ == '__main__':
     get_all_loot(fg, get_as_html())
     if len(fg.entry()) > 0:
         fg.rss_file('twitchprime.xml')
+    else:
+        logger.error(
+            f'Could not generate entries for feed'
+            )
