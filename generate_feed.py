@@ -22,7 +22,9 @@ fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.WARNING)
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
 fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 
@@ -153,15 +155,15 @@ if __name__ == '__main__':
         )
     # Change the below URL when self-hosting.
     fg.link(
-        href = 'https://dark-nova.me/twitchprime.xml',
+        href = 'https://dark-nova.me/twitch-prime.xml',
         rel = 'self'
         )
     # Change the below URL when self-hosting.
-    fg.logo('https://dark-nova.me/twitchprime.png')
+    fg.logo('https://dark-nova.me/twitch-prime.png')
     fg.language('en-US')
     get_all_loot(fg, get_as_html())
     if len(fg.entry()) > 0:
-        fg.rss_file('twitchprime.xml')
+        fg.rss_file('twitch-prime.xml')
     else:
         logger.error(
             f'Could not generate entries for feed'
