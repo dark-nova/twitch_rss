@@ -40,7 +40,7 @@ $ . venv/bin/activate
 
 ## Live Version
 
-See [here](https://dark-nova.me/twitchprime.xml). This file is generated/updated every midnight Pacific Time via `cron`.
+See [here](https://dark-nova.me/twitch-prime.xml). This file is generated/updated every midnight Pacific Time via `cron`.
 
 ## Disclaimer
 
