@@ -3,13 +3,19 @@ import sqlite3
 import pendulum
 
 
-def create():
-    """Creates the database.
+class Error(Exception):
+    """Base exception for exceptions in this class."""
 
-    Returns:
-        None
 
-    """
+class CorruptTableError(Error):
+    """The table in the database was corrupt."""
+    def __init__(self):
+        super().__init__('Table recreated')
+
+
+
+def create() -> None:
+    """Creates the database."""
     conn = sqlite3.connect('rss.db')
     c = conn.cursor()
     c.execute(
@@ -18,10 +24,9 @@ def create():
         )
     conn.commit()
     conn.close()
-    return
 
 
-def check_if_entry_exists(title: str):
+def check_if_entry_exists(title: str) -> bool:
     """Checks if an entry is already in the database.
 
     Args:
@@ -49,15 +54,12 @@ def check_if_entry_exists(title: str):
         return False
 
 
-def add_entry(title: str, datetime: pendulum.datetime):
+def add_entry(title: str, datetime: pendulum.datetime) -> None:
     """Adds an entry to the database.
 
     Args:
         title (str): the entry's URL
         datetime (pendulum.datetime): the date of the entry
-
-    Returns:
-        None
 
     """
     datetime = datetime.in_tz('UTC')
@@ -70,7 +72,6 @@ def add_entry(title: str, datetime: pendulum.datetime):
         )
     conn.commit()
     conn.close()
-    return
 
 
 def get_entry_time(title: str):
@@ -83,7 +84,7 @@ def get_entry_time(title: str):
         pendulum.datetime.Datetime: an appropriate datetime
 
     Raises:
-        Exception: if the table was corrupt
+        CorruptTableError: if the table was corrupt
 
     """
     conn = sqlite3.connect('rss.db')
@@ -94,17 +95,18 @@ def get_entry_time(title: str):
             (title,)
             )
         record = c.fetchone()
-        return pendulum.datetime(*record[1:], tz = 'UTC')
+        return pendulum.datetime(*record[1:], tz='UTC')
     except sqlite3.OperationalError as e:
         print(f'Exception {e} caught. Recreating database.')
         c.execute('drop table if exists entries')
         conn.commit()
         conn.close()
         create()
-        raise Exception('Table recreated')
+        raise CorruptTableError
 
 
-def purge_old():
+def purge_old() -> None:
+    """Purge old entries from the database. Maximum 20 kept."""
     conn = sqlite3.connect('rss.db')
     c = conn.cursor()
     c.execute(
@@ -115,7 +117,6 @@ def purge_old():
         )
     conn.commit()
     conn.close()
-    return
 
 
 if __name__ == '__main__':

@@ -6,9 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.0.4] - 2019-10-08
 ### Added
 - Forgot to call `db.purge_old()`; should now work and prune old entries from the db
+- Custom exception `CorruptTableError` to replace broad `Exception` in db
 
 ### Fixed
-- Titles are now using the `<p>` tag, not `<span>`
+- Titles now use the `<p>` tag, not `<span>`
 
 ## [1.0.3] - 2019-09-09
 ### Added

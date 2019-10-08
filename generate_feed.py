@@ -42,7 +42,7 @@ def get_as_html():
     # Choose your own webdriver if desired
     options = webdriver.firefox.options.Options()
     options.headless = True
-    browser = webdriver.Firefox(options = options)
+    browser = webdriver.Firefox(options=options)
     browser.get(URL)
     try:
         element = WebDriverWait(browser, 20).until(
@@ -58,7 +58,7 @@ def get_as_html():
         browser.quit()
 
 
-def get_all_loot(fg: FeedGenerator, soup = None):
+def get_all_loot(fg: FeedGenerator, soup = None) -> None:
     """Gets all loot from page.
 
     Loot can be categorized as either 'in-game' or 'games'.
@@ -66,9 +66,6 @@ def get_all_loot(fg: FeedGenerator, soup = None):
     Args:
         fg (FeedGenerator): the feed to add entries
         soup (optional): the soup to use; defaults to None
-
-    Returns:
-        None
 
     """
 
@@ -83,7 +80,7 @@ def get_all_loot(fg: FeedGenerator, soup = None):
     return
 
 
-def get_loot(fg: FeedGenerator, loot, category: str):
+def get_loot(fg: FeedGenerator, loot, category: str) -> None:
     """Gets loot for a given `loot` type.
 
     Called by `get_all_loot`.
@@ -94,11 +91,8 @@ def get_loot(fg: FeedGenerator, loot, category: str):
         category (str): either 'In-Game Loot and More'
             or 'Games with Prime'
 
-    Returns:
-        None
-
     """
-    today = pendulum.today(tz = 'UTC')
+    today = pendulum.today(tz='UTC')
 
     for offer in loot.find_all('div', 'offer'):
         entry = fg.add_entry()
@@ -116,17 +110,17 @@ def get_loot(fg: FeedGenerator, loot, category: str):
         description.append(f'Expires: {expires_by}')
 
         entry.category(
-            category = {
+            category={
                 'term': category,
                 'label': category
                 }
             )
         try:
             link = offer.find('a')['href']
-            entry.link(href = link)
+            entry.link(href=link)
             entry.guid(link)
         except TypeError:
-            entry.link(href = URL)
+            entry.link(href=URL)
             entry.guid(URL)
             description.append('Visit main page to claim offer.')
 
@@ -139,7 +133,7 @@ def get_loot(fg: FeedGenerator, loot, category: str):
                 today
                 )
 
-        entry.description(description = ' | '.join(description))
+        entry.description(description=' | '.join(description))
 
     return
 
@@ -150,13 +144,13 @@ if __name__ == '__main__':
     fg.author({'name': 'Twitch Prime'})
     fg.description('Twitch Prime Games and Loot')
     fg.link(
-        href = URL,
-        rel = 'alternate'
+        href=URL,
+        rel='alternate'
         )
     # Change the below URL when self-hosting.
     fg.link(
-        href = 'https://dark-nova.me/twitch-prime.xml',
-        rel = 'self'
+        href='https://dark-nova.me/twitch-prime.xml',
+        rel='self'
         )
     # Change the below URL when self-hosting.
     fg.logo('https://dark-nova.me/twitch-prime.png')
