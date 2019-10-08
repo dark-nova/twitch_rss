@@ -168,3 +168,4 @@ if __name__ == '__main__':
         logger.error(
             f'Could not generate entries for feed'
             )
+    db.purge_old()
