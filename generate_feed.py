@@ -105,7 +105,7 @@ def get_loot(fg: FeedGenerator, loot, category: str):
         description = []
 
         info = offer.find('div', 'offer__body__titles')
-        entry.title(info.find('span').text.strip())
+        entry.title(info.find('p', 'tw-amazon-ember-bold').text.strip())
         offered_by = info.find('p', 'tw-c-text-alt-2').text.strip()
         description.append(f'Offered by: {offered_by}')
 
