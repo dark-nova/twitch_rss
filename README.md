@@ -1,4 +1,4 @@
-# [*Twitch*][Twitch] Prime RSS Project
+# *[Twitch][Twitch] Prime* RSS Project
 
 ## Overview
 
@@ -6,7 +6,11 @@ This project scrapes the [*Twitch Prime* rewards page](https://twitch.amazon.com
 
 ## Usage
 
-Run [`class_count.py`](class_count.py) to get an idea of which classes to scrape, although I find the script unnecessary now. Run [`generate_feed.py`](generate_feed.py) to generate the feed. You can run [`db.py`](db.py) before anything else to create the database, but that too is optional and redundant.
+If you are having issues, you may run [`class_count.py`](class_count.py) to get an idea of which classes to scrape, although I find the script unnecessary now.
+
+You may also run [`db.py`](db.py) before anything else to create the database, but that too is optional and redundant.
+
+Run [`generate_feed.py`](generate_feed.py) to generate the feed.
 
 ## Requirements
 
@@ -22,7 +26,7 @@ This code is designed around the following:
 
 Pick and install a `webdriver` of your choice for `selenium`. Your `webdriver` should also match the installed browser. If you have issues choosing, you may try [*Firefox*](https://github.com/mozilla/geckodriver) (`geckodriver`). They are tested for this project and run headless.
 
-⚠ Make sure your chosen `webdriver` and browser is in your `$PATH`.
+⚠️ Make sure your chosen `webdriver` and browser is in your `$PATH`.
 
 ## Live Version
 
