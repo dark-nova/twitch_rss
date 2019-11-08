@@ -59,13 +59,12 @@ def get_as_html():
         browser.quit()
 
 
-def get_all_loot(fg: FeedGenerator, soup = None) -> None:
+def get_all_loot(soup = None) -> None:
     """Gets all loot from page.
 
     Loot can be categorized as either 'in-game' or 'games'.
 
     Args:
-        fg (FeedGenerator): the feed to add entries
         soup (optional): the soup to use; defaults to None
 
     """
@@ -76,7 +75,7 @@ def get_all_loot(fg: FeedGenerator, soup = None) -> None:
 
     for loot in soup.find_all('div', 'offer-list__content'):
         category = loot.find('h3').text.strip()
-        get_loot(fg, loot, category)
+        get_loot(loot, category)
 
     return
 
