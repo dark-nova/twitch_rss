@@ -32,6 +32,8 @@ CH.setFormatter(FORMATTER)
 LOGGER.addHandler(FH)
 LOGGER.addHandler(CH)
 
+ENTRIES = Dict[str, Tuple[str, str, str, pendulum.datetime]]
+
 
 def get_as_html():
     """Gets the true source of the URL.
@@ -59,7 +61,7 @@ def get_as_html():
         browser.quit()
 
 
-def get_all_loot(soup = None) -> None:
+def get_all_loot(soup = None) -> ENTRIES:
     """Gets all loot from page.
 
     Loot can be categorized as either 'in-game' or 'games'.
@@ -73,16 +75,16 @@ def get_all_loot(soup = None) -> None:
         with open('example.html', 'r') as example:
             soup = BeautifulSoup(example, 'html.parser')
 
+    entries = {}
+
     for loot in soup.find_all('div', 'offer-list__content'):
         category = loot.find('h3').text.strip()
-        get_loot(loot, category)
+        entries.update(get_loot(loot, category))
 
-    return
+    return entries
 
 
-def get_loot(
-    loot, category: str
-    ) -> Dict[str, Tuple[str, str, str, pendulum.datetime]]:
+def get_loot(loot, category: str) -> ENTRIES:
     """Gets loot for a given `loot` type.
 
     Called by `get_all_loot`.
@@ -106,7 +108,7 @@ def get_loot(
 
         info = offer.find('div', 'offer__body__titles')
         title = info.find('p', 'tw-amazon-ember-bold').text.strip()
-        
+
         offered_by = info.find('p', 'tw-c-text-alt-2').text.strip()
         description.append(f'Offered by: {offered_by}')
 
@@ -130,7 +132,7 @@ def get_loot(
                 title,
                 today
                 )
-        
+
         entries[title] = (
             ' | '.join(description),
             category,
@@ -141,10 +143,7 @@ def get_loot(
     return entries
 
 
-def generate_feed(
-    fg: FeedGenerator,
-    entries: Dict[str, Tuple[str, str, str, pendulum.datetime]]
-    ) -> None:
+def generate_feed(fg: FeedGenerator, entries: ENTRIES) -> None:
     """Generates the feed in ascending order of intended publication date.
 
     Args:
