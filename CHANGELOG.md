@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.5] - 2019-11-08
+### Changed
+- Entries should now be sorted by order of publication date, followed by name, all in ascending order. This is because unlike expected feeds, some entries get their dates pushed around, screwing up the normal order.
+
 ## [1.0.4] - 2019-10-08
 ### Added
 - Forgot to call `db.purge_old()`; should now work and prune old entries from the db

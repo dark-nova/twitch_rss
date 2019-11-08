@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, Tuple
 
 import pendulum
 from bs4 import BeautifulSoup
@@ -13,23 +14,23 @@ import db
 
 URL = 'https://twitch.amazon.com/tp/loot'
 
-logger = logging.getLogger('twitch_prime_feed')
-logger.setLevel(logging.DEBUG)
+LOGGER = logging.getLogger('twitch_prime_feed')
+LOGGER.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler('feed.log')
-fh.setLevel(logging.DEBUG)
+FH = logging.FileHandler('feed.log')
+FH.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.WARNING)
+CH = logging.StreamHandler()
+CH.setLevel(logging.WARNING)
 
-formatter = logging.Formatter(
+FORMATTER = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
-fh.setFormatter(formatter)
-ch.setFormatter(formatter)
+FH.setFormatter(FORMATTER)
+CH.setFormatter(FORMATTER)
 
-logger.addHandler(fh)
-logger.addHandler(ch)
+LOGGER.addHandler(FH)
+LOGGER.addHandler(CH)
 
 
 def get_as_html():
@@ -80,26 +81,33 @@ def get_all_loot(fg: FeedGenerator, soup = None) -> None:
     return
 
 
-def get_loot(fg: FeedGenerator, loot, category: str) -> None:
+def get_loot(
+    loot, category: str
+    ) -> Dict[str, Tuple[str, str, str, pendulum.datetime]]:
     """Gets loot for a given `loot` type.
 
     Called by `get_all_loot`.
 
     Args:
         fg (FeedGenerator): the feed to add entries
-        loot: the loot to parse
+        loot: bs4 object; the loot to parse
         category (str): either 'In-Game Loot and More'
             or 'Games with Prime'
+
+    Returns:
+        dict: {title: (description, category, link, pub_date)}
 
     """
     today = pendulum.today(tz='UTC')
 
+    entries = {}
+
     for offer in loot.find_all('div', 'offer'):
-        entry = fg.add_entry()
         description = []
 
         info = offer.find('div', 'offer__body__titles')
-        entry.title(info.find('p', 'tw-amazon-ember-bold').text.strip())
+        title = info.find('p', 'tw-amazon-ember-bold').text.strip()
+        
         offered_by = info.find('p', 'tw-c-text-alt-2').text.strip()
         description.append(f'Offered by: {offered_by}')
 
@@ -109,33 +117,58 @@ def get_loot(fg: FeedGenerator, loot, category: str) -> None:
             expires_by = 'soon'
         description.append(f'Expires: {expires_by}')
 
+        try:
+            link = offer.find('a')['href']
+        except TypeError:
+            link = URL
+            description.append('Visit main page to claim offer.')
+
+        if db.check_if_entry_exists(entry.title()):
+            pub_date = db.get_entry_time(entry.title())
+        else:
+            pub_date = today
+            db.add_entry(
+                entry.title(),
+                today
+                )
+        
+        entries[title] = (
+            ' | '.join(description),
+            category,
+            link,
+            pub_date
+            )
+
+    return entries
+
+
+def generate_feed(
+    fg: FeedGenerator,
+    entries: Dict[str, Tuple[str, str, str, pendulum.datetime]]
+    ) -> None:
+    """Generates the feed in ascending order of intended publication date.
+
+    Args:
+        fg (FeedGenerator): the feed to add entries
+        entries (dict): {title: (description, category, link, pub_date)}
+
+    """
+    # Sort results by pub_date, then by name alphabetically
+    for title, (description, category, link, pub_date) in sorted(
+        entries.items(), key=lambda entry: (entry[1][3], entry[0])
+        ):
+        entry = fg.add_entry()
+        entry.title(title)
         entry.category(
             category={
                 'term': category,
                 'label': category
                 }
             )
-        try:
-            link = offer.find('a')['href']
-            entry.link(href=link)
-            entry.guid(link)
-        except TypeError:
-            entry.link(href=URL)
-            entry.guid(URL)
-            description.append('Visit main page to claim offer.')
-
-        if db.check_if_entry_exists(entry.title()):
-            entry.pubDate(db.get_entry_time(entry.title()))
-        else:
-            entry.pubDate(today)
-            db.add_entry(
-                entry.title(),
-                today
-                )
-
-        entry.description(description=' | '.join(description))
-
-    return
+        entry.link(href=link)
+        entry.guid(link)
+        entry.description(description=description)
+        entry.pubDate(pub_date)
 
 
 if __name__ == '__main__':
@@ -155,11 +188,12 @@ if __name__ == '__main__':
     # Change the below URL when self-hosting.
     fg.logo('https://dark-nova.me/twitch-prime.png')
     fg.language('en-US')
-    get_all_loot(fg, get_as_html())
+    entries = get_all_loot(get_as_html())
+    generate_feed(fg, entries)
     if len(fg.entry()) > 0:
         fg.rss_file('twitch-prime.xml')
     else:
-        logger.error(
+        LOGGER.error(
             f'Could not generate entries for feed'
             )
     db.purge_old()
