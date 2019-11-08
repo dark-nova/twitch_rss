@@ -122,12 +122,12 @@ def get_loot(
             link = URL
             description.append('Visit main page to claim offer.')
 
-        if db.check_if_entry_exists(entry.title()):
-            pub_date = db.get_entry_time(entry.title())
+        if db.check_if_entry_exists(title):
+            pub_date = db.get_entry_time(title)
         else:
             pub_date = today
             db.add_entry(
-                entry.title(),
+                title,
                 today
                 )
         
