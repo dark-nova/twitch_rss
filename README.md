@@ -4,6 +4,10 @@
 
 This project scrapes the [*Twitch Prime* rewards page](https://twitch.amazon.com/tp/loot) to generate a RSS feed of items.
 
+### ⚠️ This repository will be archived before 2020. ⚠️
+
+Live updates will also be pulled.
+
 ## Usage
 
 If you are having issues, you may run [`class_count.py`](class_count.py) to get an idea of which classes to scrape, although I find the script unnecessary now.
@@ -30,7 +34,7 @@ Pick and install a `webdriver` of your choice for `selenium`. Your `webdriver` s
 
 ## Live Version
 
-See [here](https://dark-nova.me/twitch-prime.xml). This file is generated/updated every midnight Pacific Time via `cron`.
+Pulled for archiving.
 
 ## Disclaimer
 
